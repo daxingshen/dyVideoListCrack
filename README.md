@@ -1,5 +1,13 @@
 # dolphin
+方法一：
+  版本：python3
+  单个测试文件，注意替换html文件的路径和相应版本的chrome driver
+  
+  > python app.py
+  ![image](https://github.com/daxingshen/imgines/raw/master/444.png)
 
+  
+方法二：使用thriftpy服务话
 linux平台,需安装chrome
 运行 
 
