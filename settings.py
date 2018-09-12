@@ -24,7 +24,7 @@ logging_config = dict(
 
 
 #网络代理
-PROXIES = 'http:100.98.76.31:10240'
+PROXIES = 'http:100.98.76.31:1020'
 
 PRO_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(PRO_DIR)
