@@ -222,7 +222,7 @@ class Kol(object):
 
         """
         s2 = s2.replace('&&&', self.uid)
-        file = os.path.join(PRO_DIR, './tmp/' + uuid.uuid4().hex + '.html')
+        file = os.path.join(PRO_DIR, './' + uuid.uuid4().hex + '.html')
         with open(file, 'w', encoding='utf-8') as fw:
             fw.write(s1 + s_tac + s2)
 
