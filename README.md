@@ -30,3 +30,7 @@ linux平台,需安装chrome
 > PYTHONPATH=$PYTHONPATH:../ python main.py  
 
 ![image](https://github.com/daxingshen/imgines/raw/master/WX20180912-223024.png)
+
+
+这里给出130万抖音用户的uid
+[抖音用户id](https://github.com/daxingshen/loach/blob/master/douyin_distinct.txt）
