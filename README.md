@@ -1,4 +1,6 @@
 # dolphin
+
+### 给定任意用户的uid， 实时爬去该用户所有的视频
 方法一：
   版本：python3
   单个测试文件，注意替换html文件的路径和相应版本的chrome driver
