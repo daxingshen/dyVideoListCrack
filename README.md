@@ -33,4 +33,5 @@ linux平台,需安装chrome
 
 
 这里给出130万抖音用户的uid
-[抖音用户id](https://github.com/daxingshen/loach/blob/master/douyin_distinct.txt）
+
+[抖音用户id](https://github.com/daxingshen/loach/blob/master/douyin_distinct.txt)
