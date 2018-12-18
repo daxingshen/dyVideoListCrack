@@ -38,5 +38,5 @@ linux平台,需安装chrome
 
 [抖音用户id](https://github.com/daxingshen/loach/blob/master/douyin_distinct.txt)
 
-
-### 再偷偷说一个小秘密， 所有android端的接口（除粉丝和关注），去掉as、cp、mas三个参数加上postman的ua可以直接调用
+时间：2018-12-18
+### 再偷偷说一个小秘密， 所有android端的接口（除粉丝和关注和评论），去掉as、cp、mas三个参数加上postman的ua可以直接调用
