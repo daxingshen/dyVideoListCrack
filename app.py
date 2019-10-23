@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 import re
 import requests
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 import json
+import os
+from settings import PRO_DIR
+print(PRO_DIR)
 
 
 def get_sig_dytk_headers(uid, ua):
@@ -12,7 +17,10 @@ def get_sig_dytk_headers(uid, ua):
     p2 = r'dytk ?: ?\'(?P<dytk>[0-9a-z]*?)\''
     pattern2 = re.compile(p2)
     html = requests.get('https://www.douyin.com/share/user/{}/?share_type=link'.format(uid), headers={
-        'user-agent': ua}).text
+        'user-agent': ua}, proxies={
+                                                                            'http': 'http://' + '118.190.122.25:10240',
+                                                                            'https': 'http://' + '118.190.122.25:10240'
+                                                                        }).text
 
     tac = pattern1.search(html).group('tac')
     dytk = pattern2.search(html).group('dytk')
@@ -188,37 +196,48 @@ def get_sig_dytk_headers(uid, ua):
     """
     s2 = s2.replace('&&&', uid)
 
-    with open('/Users/apple/test/loach/loach/test/signature/test2.html', 'w', encoding='utf-8') as fw:
+    with open(os.path.join(PRO_DIR, 'test/signature/test2.html'), 'w', encoding='utf-8') as fw:
         fw.write(s1 + s_tac + s2)
     #
     from selenium import webdriver
     option = webdriver.ChromeOptions()
-    # option.add_argument('headless')
+
+    option.add_argument('start-maximized')
+    option.add_argument('--disable-dev-shm-usage')
+    option.add_argument('--disable-extensions')
+    option.add_argument('--disable-gpu')
+    option.add_argument('--no-sandbox')
+    option.add_argument('headless')
     option.add_argument('disable-infobars')
     option.add_argument('--user-agent={}'.format(ua))
-    driver = webdriver.Chrome('/Users/apple/test/loach/loach/test/signature/chromedriver', chrome_options=option)
+    driver = webdriver.Chrome(os.path.join(PRO_DIR, 'opt/chromedriver'), chrome_options=option)
 
     js = "window.open('')"
     driver.execute_script(js)
-    driver.get('file:///Users/apple/test/loach/loach/test/signature/test2.html')
+    driver.get('file:///'+ PRO_DIR +'/test/signature/test2.html')
     # driver.get_cookies()
     sig = driver.title
     driver.close()
     return sig, dytk
 
 
-def get_all_video(user_id):
+def get_all_video(user_id, page=1):
     ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
     sig, dytk = get_sig_dytk_headers(user_id, ua)
 
-    has_more = 1
     max_cursor = 0
-    headers = {'user-agent': ua}
+    headers = {
+        'user-agent': ua
+    }
     result = []
-    while has_more == 1:
+    while page > 0 :
         r = requests.get(
             'https://www.douyin.com/aweme/v1/aweme/post/?user_id={}&count=21&max_cursor={}&aid=1128&_signature={}&dytk={}'.format(
-                user_id, max_cursor, sig, dytk), headers=headers)
+                user_id, max_cursor, sig, dytk), headers=headers, proxies={
+                                                                            'http': 'http://' + '118.190.122.25:10240',
+                                                                            'https': 'http://' + '118.190.122.25:10240'
+                                                                        }
+        )
         if r.status_code == 200:
             data = json.loads(r.text)
             if data['status_code'] == 0:
@@ -227,16 +246,17 @@ def get_all_video(user_id):
                     max_cursor = data['max_cursor']
                     headers = r.request.headers
                     result.append(dict([('result_code', 1), ('aweme_list', data['aweme_list'])]))
-                    # time.sleep(1)
-                    continue
+                    if not has_more:
+                        break
                 else:
                     result.append(dict([('result_code', 0), ('aweme_list', data['aweme_list'])]))
-        break
+        page -= 1
 
     return result
 
+
 if __name__ == '__main__':
-    r = get_all_video('6556303280')
+    r = get_all_video('110563717491')
     import json
     for item in r:
         print(item)

@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-
 import sys
-import thriftpy
-from thriftpy.rpc import make_server
-from thriftpy.thrift import TProcessor
-from thriftpy.protocol import TCyBinaryProtocolFactory
-from thriftpy.transport import TCyBufferedTransportFactory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+import sys
+import thriftpy2 as thriftpy
+from thriftpy2.rpc import make_server
+from thriftpy2.thrift import TProcessor
+from thriftpy2.protocol import TCyBinaryProtocolFactory
+from thriftpy2.transport import TCyBufferedTransportFactory
 from dolphin.service.douyin.kol import kol
 from settings import PRO_DIR
 
@@ -17,8 +18,7 @@ class KolDispatcher(object):
         return "pong"
 
     def fetch_all_works(self, uid):
-        kol.set_user(uid)
-        return json.dumps(kol.fetch_all_video())
+        return json.dumps(kol.fetch_all_video(uid))
 
     def checkout_user_agent(self):
         return kol.checkout_user_agent()
@@ -30,10 +30,11 @@ else:
     kol_thrift = thriftpy.load(os.path.join(PRO_DIR, './dolphin/service/douyin/data/kol_thrift.thrift'), module_name='kol_thrift_thrift')
 
 app = TProcessor(kol_thrift.KolServer, KolDispatcher())
-
+# server = TProcessor(kol_thrift.KolServer, KolDispatcher())
 #
 if __name__ == '__main__':
     server = make_server(kol_thrift.KolServer, KolDispatcher(), '0.0.0.0', 6000, proto_factory=TCyBinaryProtocolFactory(), trans_factory=TCyBufferedTransportFactory())
     server.serve()
 
     # gunicorn_thrift dolphin.service.douyin.kolserver:app -k thriftpy_sync -b 0.0.0.0:6000 -w 4 --thrift-protocol-factory thriftpy.protocol:TCyBinaryProtocolFactory --thrift-transport-factory thriftpy.transport:TCyBufferedTransportFactory --thrift-client-timeout=5
+    # gunicorn_thrift dolphin.service.douyin.kolserver:app --bind 0.0.0.0:7000 -w 10 -k thriftpy_gevent  --timeout 10  --thrift-protocol-factory thriftpy2.protocol:TCyBinaryProtocolFactory --thrift-transport-factory thriftpy2.transport:TCyBufferedTransportFactory --error-logfile aa.log -D -p douyin_server.pid

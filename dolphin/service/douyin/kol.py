@@ -4,12 +4,15 @@ import requests
 import json
 import os
 import uuid
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from settings import PRO_DIR, CHROME_DRIVER, PROXIES
 from selenium import webdriver
 from selenium.webdriver.common.proxy import *
 from fake_useragent import UserAgent
+from settings import PRO_DIR
 
-ua = UserAgent()
+ua = UserAgent(path=os.path.join(PRO_DIR, 'opt/fake_useragent_0.1.10.json'))
 
 class Kol(object):
     proxy = Proxy(
@@ -22,7 +25,6 @@ class Kol(object):
 
 
     def __init__(self):
-        self.uid = ''
         self.driver=None
 
     def set_up(self):
@@ -37,18 +39,19 @@ class Kol(object):
         self.driver = webdriver.Chrome(CHROME_DRIVER, chrome_options=option)
         self.driver.get('https://www.baidu.com')
 
-    def set_user(self, uid):
-        self.uid = uid
 
-    def __get_sig_dytk(self):
+    def __get_sig_dytk(self, uid):
         #  获取到 tac 和 dytk
         p1 = r'<script>tac=\'(?P<tac>[\W\w]{150,300}?)\'</script>'
         pattern1 = re.compile(p1)
 
         p2 = r'dytk ?: ?\'(?P<dytk>[0-9a-z]*?)\''
         pattern2 = re.compile(p2)
-        html = requests.get('https://www.douyin.com/share/user/{}/?share_type=link'.format(self.uid), headers={
-            'user-agent': self.ua}).text
+        html = requests.get('https://www.douyin.com/share/user/{}/?share_type=link'.format(uid), headers={
+            'user-agent': self.ua}, proxies={
+                                                                            'http': 'http://' + '118.190.122.25:10240',
+                                                                            'https': 'http://' + '118.190.122.25:10240'
+                                                                        }).text
         tac = pattern1.search(html).group('tac')
         dytk = pattern2.search(html).group('dytk')
         # print('22',tac,dytk)
@@ -221,8 +224,8 @@ class Kol(object):
 
 
         """
-        s2 = s2.replace('&&&', self.uid)
-        file = os.path.join(PRO_DIR, './' + uuid.uuid4().hex + '.html')
+        s2 = s2.replace('&&&', uid)
+        file = os.path.join(PRO_DIR, './htmls' + uuid.uuid4().hex + '.html')
         with open(file, 'w', encoding='utf-8') as fw:
             fw.write(s1 + s_tac + s2)
 
@@ -231,17 +234,22 @@ class Kol(object):
         os.remove(file)
         return sig, dytk
 
-    def fetch_all_video(self):
-        sig, dytk = self.__get_sig_dytk()
+    def fetch_all_video(self, uid, page=1):
+        sig, dytk = self.__get_sig_dytk(uid)
 
-        has_more = 1
         max_cursor = 0
-        headers = {'user-agent': self.ua}
+        headers = {
+            'user-agent': self.ua
+        }
         result = []
-        while has_more == 1:
+        while page > 0:
             r = requests.get(
                 'https://www.douyin.com/aweme/v1/aweme/post/?user_id={}&count=21&max_cursor={}&aid=1128&_signature={}&dytk={}'.format(
-                    self.uid, max_cursor, sig, dytk), headers=headers, proxies={'http': PROXIES})
+                    uid, max_cursor, sig, dytk), headers=headers, proxies={
+                    'http': 'http://' + '118.190.122.25:10240',
+                    'https': 'http://' + '118.190.122.25:10240'
+                }
+            )
             if r.status_code == 200:
                 data = json.loads(r.text)
                 if data['status_code'] == 0:
@@ -250,11 +258,11 @@ class Kol(object):
                         max_cursor = data['max_cursor']
                         headers = r.request.headers
                         result.append(dict([('result_code', 1), ('aweme_list', data['aweme_list'])]))
-                        # time.sleep(1)
-                        continue
+                        if not has_more:
+                            break
                     else:
                         result.append(dict([('result_code', 0), ('aweme_list', data['aweme_list'])]))
-            break
+            page -= 1
 
         return result
 
@@ -267,6 +275,5 @@ kol = Kol()
 kol.set_up()
 
 if __name__ == '__main__':
-    kol.set_user('6556303280')
-    r = kol.fetch_all_video()
+    r = kol.fetch_all_video('89852104754')
     print(r)

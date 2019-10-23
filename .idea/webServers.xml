@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="23eadc74-d680-44f4-b1b4-ccf334aaaf90" name="192.168.1.94" url="http://192.168.1.94">
+        <fileTransfer host="192.168.1.94" port="22" rootFolder="/alidata/server/dyVideoListCrack" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
