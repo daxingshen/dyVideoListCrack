@@ -12,7 +12,7 @@ from selenium.webdriver.common.proxy import *
 from fake_useragent import UserAgent
 from settings import PRO_DIR
 
-ua = UserAgent(path=os.path.join(PRO_DIR, 'opt/fake_useragent_0.1.10.json'))
+ua_gen = UserAgent(path=os.path.join(PRO_DIR, 'opt/fake_useragent_0.1.10.json'))
 
 class Kol(object):
     proxy = Proxy(
@@ -21,7 +21,7 @@ class Kol(object):
             'httpProxy': PROXIES
         }
     )
-    ua = ua.random
+    ua = ua_gen.random
 
 
     def __init__(self):
@@ -37,10 +37,11 @@ class Kol(object):
         option.add_argument('--disable-gpu')
         option.add_argument('--user-agent={}'.format(self.ua))
         self.driver = webdriver.Chrome(CHROME_DRIVER, chrome_options=option)
-        self.driver.get('https://www.baidu.com')
+        # self.driver.get('https://www.baidu.com')
+        js = "window.open('')"
+        self.driver.execute_script(js)
 
-
-    def __get_sig_dytk(self, uid):
+    def get_sig_dytk(self, uid):
         #  获取到 tac 和 dytk
         p1 = r'<script>tac=\'(?P<tac>[\W\w]{150,300}?)\'</script>'
         pattern1 = re.compile(p1)
@@ -48,7 +49,7 @@ class Kol(object):
         p2 = r'dytk ?: ?\'(?P<dytk>[0-9a-z]*?)\''
         pattern2 = re.compile(p2)
         html = requests.get('https://www.douyin.com/share/user/{}/?share_type=link'.format(uid), headers={
-            'user-agent': self.ua}, proxies={
+            'user-agent': ua_gen.random}, proxies={
                                                                             'http': 'http://' + '118.190.122.25:10240',
                                                                             'https': 'http://' + '118.190.122.25:10240'
                                                                         }).text
@@ -232,10 +233,10 @@ class Kol(object):
         self.driver.get('file://' + file)
         sig = self.driver.title
         os.remove(file)
-        return sig, dytk
+        return sig, dytk, self.ua
 
     def fetch_all_video(self, uid, page=1):
-        sig, dytk = self.__get_sig_dytk(uid)
+        sig, dytk, _ = self.get_sig_dytk(uid)
 
         max_cursor = 0
         headers = {

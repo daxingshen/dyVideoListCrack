@@ -10,6 +10,14 @@
           <option name="port" value="22" />
         </fileTransfer>
       </webServer>
+      <webServer id="88e67185-a6ab-492b-8658-73408bc4e5e0" name="12" url="http://192.168.1.12">
+        <fileTransfer host="192.168.1.12" port="22" rootFolder="/alidata/server/dyVideoListCrack" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>

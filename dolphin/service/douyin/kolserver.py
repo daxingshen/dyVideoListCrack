@@ -20,6 +20,15 @@ class KolDispatcher(object):
     def fetch_all_works(self, uid):
         return json.dumps(kol.fetch_all_video(uid))
 
+    def fetch_sig_and_dytk(self, uid):
+        sig, dytk, ua = kol.get_sig_dytk(uid)
+        r = {
+            'sig': sig,
+            'dytk': dytk,
+            'ua': ua
+        }
+        return json.dumps(r)
+
     def checkout_user_agent(self):
         return kol.checkout_user_agent()
 
@@ -33,7 +42,7 @@ app = TProcessor(kol_thrift.KolServer, KolDispatcher())
 # server = TProcessor(kol_thrift.KolServer, KolDispatcher())
 #
 if __name__ == '__main__':
-    server = make_server(kol_thrift.KolServer, KolDispatcher(), '0.0.0.0', 6000, proto_factory=TCyBinaryProtocolFactory(), trans_factory=TCyBufferedTransportFactory())
+    server = make_server(kol_thrift.KolServer, KolDispatcher(), '0.0.0.0', 7000, proto_factory=TCyBinaryProtocolFactory(), trans_factory=TCyBufferedTransportFactory())
     server.serve()
 
     # gunicorn_thrift dolphin.service.douyin.kolserver:app -k thriftpy_sync -b 0.0.0.0:6000 -w 4 --thrift-protocol-factory thriftpy.protocol:TCyBinaryProtocolFactory --thrift-transport-factory thriftpy.transport:TCyBufferedTransportFactory --thrift-client-timeout=5

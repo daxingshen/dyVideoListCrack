@@ -1,0 +1,10 @@
+certifi==2019.9.11
+chardet==3.0.4
+fake-useragent==0.1.11
+idna==2.8
+ply==3.11
+requests==2.22.0
+selenium==3.141.0
+thrift-connector==0.24
+thriftpy2==0.4.7
+urllib3==1.25.6

@@ -16,13 +16,14 @@ from settings import PRO_DIR
 kol_thrift = thriftpy.load(os.path.join(PRO_DIR, "./dolphin/service/douyin/data/kol_thrift.thrift"), module_name="kol_thrift_thrift")
 connection_pool = ClientPool(
     kol_thrift.KolServer,
-    '192.168.1.94',
+    '192.168.1.12',
     7000,
     connection_class=ThriftPyCyClient
 )
 
 
 if __name__ == '__main__':
-    data = connection_pool.fetch_all_works('89852104754')
+    data = connection_pool.fetch_sig_and_dytk('89852104754')
+    print(data)
     for item in json.loads(data):
         print(item)

@@ -17,10 +17,7 @@ def get_sig_dytk_headers(uid, ua):
     p2 = r'dytk ?: ?\'(?P<dytk>[0-9a-z]*?)\''
     pattern2 = re.compile(p2)
     html = requests.get('https://www.douyin.com/share/user/{}/?share_type=link'.format(uid), headers={
-        'user-agent': ua}, proxies={
-                                                                            'http': 'http://' + '118.190.122.25:10240',
-                                                                            'https': 'http://' + '118.190.122.25:10240'
-                                                                        }).text
+        'user-agent': ua},).text
 
     tac = pattern1.search(html).group('tac')
     dytk = pattern2.search(html).group('dytk')
@@ -207,17 +204,17 @@ def get_sig_dytk_headers(uid, ua):
     option.add_argument('--disable-extensions')
     option.add_argument('--disable-gpu')
     option.add_argument('--no-sandbox')
-    option.add_argument('headless')
+    # option.add_argument('headless')
     option.add_argument('disable-infobars')
     option.add_argument('--user-agent={}'.format(ua))
     driver = webdriver.Chrome(os.path.join(PRO_DIR, 'opt/chromedriver'), chrome_options=option)
 
     js = "window.open('')"
     driver.execute_script(js)
-    driver.get('file:///'+ PRO_DIR +'/test/signature/test2.html')
+    driver.get('file:///' + PRO_DIR + '/test/signature/test2.html')
     # driver.get_cookies()
     sig = driver.title
-    driver.close()
+    # driver.close()
     return sig, dytk
 
 
@@ -233,10 +230,7 @@ def get_all_video(user_id, page=1):
     while page > 0 :
         r = requests.get(
             'https://www.douyin.com/aweme/v1/aweme/post/?user_id={}&count=21&max_cursor={}&aid=1128&_signature={}&dytk={}'.format(
-                user_id, max_cursor, sig, dytk), headers=headers, proxies={
-                                                                            'http': 'http://' + '118.190.122.25:10240',
-                                                                            'https': 'http://' + '118.190.122.25:10240'
-                                                                        }
+                user_id, max_cursor, sig, dytk), headers=headers,
         )
         if r.status_code == 200:
             data = json.loads(r.text)
@@ -261,6 +255,8 @@ if __name__ == '__main__':
     for item in r:
         print(item)
 
+    import time
+    time.sleep(400)
 
 
 
