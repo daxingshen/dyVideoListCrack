@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
+import signal
+
 import requests
 import json
 import os
@@ -232,6 +234,7 @@ class Kol(object):
 
         self.driver.get('file://' + file)
         sig = self.driver.title
+        self.driver.close()
         os.remove(file)
         return sig, dytk, self.ua
 
@@ -270,10 +273,19 @@ class Kol(object):
     def checkout_user_agent(self):
         self.driver.quit()
         self.set_up()
+
         return self.ua
+
 
 kol = Kol()
 kol.set_up()
+def quit(self, *arg, **kwargs):
+    print('程序终止， 正在保存任务...')
+    kol.driver.quit()
+    print('保存成功')
+
+signal.signal(signal.SIGINT, quit)
+signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
     r = kol.fetch_all_video('89852104754')
