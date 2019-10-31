@@ -300,7 +300,7 @@ kol.set_up()
 def quit(self, *arg, **kwargs):
     print('程序终止， 正在保存任务...')
     kol.driver.quit()
-
+    os.popen("ps --ppid 1 | grep chrome | awk '{print $1}' | xargs kill -9")
     print('保存成功')
 
 signal.signal(signal.SIGINT, quit)

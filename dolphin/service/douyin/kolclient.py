@@ -18,7 +18,7 @@ connection_pool = ClientPool(
     kol_thrift.KolServer,
     '192.168.1.12',
     7000,
-    timeout=600,
+    timeout=6,
     connection_class=ThriftPyCyClient
 )
 
