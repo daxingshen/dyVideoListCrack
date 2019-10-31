@@ -7,10 +7,16 @@ import json
 import os
 import uuid
 import sys
+
+from selenium.common.exceptions import TimeoutException
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from settings import PRO_DIR, CHROME_DRIVER, PROXIES
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.proxy import *
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from fake_useragent import UserAgent
 from settings import PRO_DIR
 
@@ -42,6 +48,7 @@ class Kol(object):
         # self.driver.get('https://www.baidu.com')
         js = "window.open('')"
         self.driver.execute_script(js)
+
 
     def get_sig_dytk(self, uid):
         #  获取到 tac 和 dytk
@@ -221,21 +228,32 @@ class Kol(object):
                 dycs = __M.require("douyin_falcon:node_modules/byted-acrawler/dist/runtime")
                 signc = dycs.sign(&&&)
                 document.title=signc
-                document.write(signc)
+                document.write("<p>"+signc+"</p>")
 
         </script>
 
 
         """
         s2 = s2.replace('&&&', uid)
-        file = os.path.join(PRO_DIR, './htmls' + uuid.uuid4().hex + '.html')
+        file = os.path.join(PRO_DIR, './htmls/', str(os.getpid()) + '.html')
         with open(file, 'w', encoding='utf-8') as fw:
             fw.write(s1 + s_tac + s2)
-
+        print(len(self.driver.window_handles), self.driver.window_handles)
+        # self.driver.switch_to.window(self.driver.window_handles[-1])
         self.driver.get('file://' + file)
-        sig = self.driver.title
-        self.driver.close()
-        os.remove(file)
+        sig = None
+        try:
+            sig = WebDriverWait(self.driver, 2, 0.5).until(EC.presence_of_element_located((By.TAG_NAME, 'p')))
+        except TimeoutException as e:
+            print(e)
+        if not sig:
+            return '', '', self.ua
+        sig = sig.text
+        try:
+            print('==========',file)
+            os.remove(file)
+        except IOError as e:
+            print(e)
         return sig, dytk, self.ua
 
     def fetch_all_video(self, uid, page=1):
@@ -282,6 +300,7 @@ kol.set_up()
 def quit(self, *arg, **kwargs):
     print('程序终止， 正在保存任务...')
     kol.driver.quit()
+
     print('保存成功')
 
 signal.signal(signal.SIGINT, quit)
