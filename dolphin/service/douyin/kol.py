@@ -61,7 +61,7 @@ class Kol(object):
             'user-agent': ua_gen.random}, proxies={
                                                                             'http': 'http://' + '118.190.122.25:10240',
                                                                             'https': 'http://' + '118.190.122.25:10240'
-                                                                        }).text
+                                                                        }, timeout=3).text
         tac = pattern1.search(html).group('tac')
         dytk = pattern2.search(html).group('dytk')
         # print('22',tac,dytk)
@@ -241,19 +241,13 @@ class Kol(object):
         print(len(self.driver.window_handles), self.driver.window_handles)
         # self.driver.switch_to.window(self.driver.window_handles[-1])
         self.driver.get('file://' + file)
-        sig = None
-        try:
-            sig = WebDriverWait(self.driver, 2, 0.5).until(EC.presence_of_element_located((By.TAG_NAME, 'p')))
-        except TimeoutException as e:
-            print(e)
-        if not sig:
-            return '', '', self.ua
+        sig = WebDriverWait(self.driver, 2, 0.5).until(EC.presence_of_element_located((By.TAG_NAME, 'p')))
         sig = sig.text
-        try:
-            print('==========',file)
-            os.remove(file)
-        except IOError as e:
-            print(e)
+        # try:
+        #     print('==========',file)
+        #     os.remove(file)
+        # except IOError as e:
+        #     print(e)
         return sig, dytk, self.ua
 
     def fetch_all_video(self, uid, page=1):
@@ -267,7 +261,7 @@ class Kol(object):
         while page > 0:
             r = requests.get(
                 'https://www.douyin.com/aweme/v1/aweme/post/?user_id={}&count=21&max_cursor={}&aid=1128&_signature={}&dytk={}'.format(
-                    uid, max_cursor, sig, dytk), headers=headers, proxies={
+                    uid, max_cursor, sig, dytk), timeout=3, headers=headers, proxies={
                     'http': 'http://' + '118.190.122.25:10240',
                     'https': 'http://' + '118.190.122.25:10240'
                 }
@@ -300,11 +294,11 @@ kol.set_up()
 def quit(self, *arg, **kwargs):
     print('程序终止， 正在保存任务...')
     kol.driver.quit()
-    os.popen("ps --ppid 1 | grep chrome | awk '{print $1}' | xargs kill -9")
+    os.popen("ps --ppid 1 | grep chrome | awk '{print $1}' | xargs kill")
     print('保存成功')
 
-signal.signal(signal.SIGINT, quit)
-signal.signal(signal.SIGTERM, quit)
+# signal.signal(signal.SIGINT, quit)
+# signal.signal(signal.SIGTERM, quit)
 
 if __name__ == '__main__':
     r = kol.fetch_all_video('89852104754')

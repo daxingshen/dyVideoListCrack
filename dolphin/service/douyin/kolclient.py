@@ -24,7 +24,7 @@ connection_pool = ClientPool(
 
 
 if __name__ == '__main__':
-    data = connection_pool.fetch_all_works('89852104754')
+    data = connection_pool.fetch_sig_and_dytk('89852104754')
     print(data)
     for item in json.loads(data):
         print(item)

@@ -17,16 +17,21 @@ class KolDispatcher(object):
     def ping(self):
         return "pong"
 
-    def fetch_all_works(self, uid):
-        return json.dumps(kol.fetch_all_video(uid))
+    # def fetch_all_works(self, uid):
+    #     return json.dumps(kol.fetch_all_video(uid))
 
     def fetch_sig_and_dytk(self, uid):
-        sig, dytk, ua = kol.get_sig_dytk(uid)
-        r = {
-            'sig': sig,
-            'dytk': dytk,
-            'ua': ua
-        }
+        try:
+            sig, dytk, ua = kol.get_sig_dytk(uid)
+            r = {
+                'sig': sig,
+                'dytk': dytk,
+                'ua': ua
+            }
+        except BaseException as e:
+            import traceback
+            traceback.print_exc()
+            return json.dumps({'msg': str(e)})
         return json.dumps(r)
 
     def checkout_user_agent(self):
