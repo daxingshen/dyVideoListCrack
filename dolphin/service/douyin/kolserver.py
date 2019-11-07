@@ -20,9 +20,9 @@ class KolDispatcher(object):
     # def fetch_all_works(self, uid):
     #     return json.dumps(kol.fetch_all_video(uid))
 
-    def fetch_sig_and_dytk(self, uid):
+    def fetch_sig_and_dytk(self, uid, dytk=None, tac=None):
         try:
-            sig, dytk, ua = kol.get_sig_dytk(uid)
+            sig, dytk, ua = kol.get_sig_dytk(uid, dytk=dytk, tac=tac)
             r = {
                 'sig': sig,
                 'dytk': dytk,

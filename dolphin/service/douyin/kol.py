@@ -50,21 +50,19 @@ class Kol(object):
         self.driver.execute_script(js)
 
 
-    def get_sig_dytk(self, uid):
-        #  获取到 tac 和 dytk
-        p1 = r'<script>tac=\'(?P<tac>[\W\w]{150,300}?)\'</script>'
-        pattern1 = re.compile(p1)
+    def get_sig_dytk(self, uid, dytk=None, tac=None):
+        if not dytk or not tac:
+            #  获取到 tac 和 dytk
+            p1 = r'<script>tac=\'(?P<tac>[\W\w]{150,300}?)\'</script>'
+            pattern1 = re.compile(p1)
 
-        p2 = r'dytk ?: ?\'(?P<dytk>[0-9a-z]*?)\''
-        pattern2 = re.compile(p2)
-        html = requests.get('https://www.douyin.com/share/user/{}/?share_type=link'.format(uid), headers={
-            'user-agent': ua_gen.random}, proxies={
-                                                                            'http': 'http://' + '118.190.122.25:10240',
-                                                                            'https': 'http://' + '118.190.122.25:10240'
-                                                                        }, timeout=3).text
-        tac = pattern1.search(html).group('tac')
-        dytk = pattern2.search(html).group('dytk')
-        # print('22',tac,dytk)
+            p2 = r'dytk ?: ?\'(?P<dytk>[0-9a-z]*?)\''
+            pattern2 = re.compile(p2)
+            html = requests.get('https://www.douyin.com/share/user/{}/?share_type=link'.format(uid), headers={
+                'user-agent': ua_gen.random}, proxies={'http': 'http://' + '118.190.122.25:10240', 'https': 'http://' + '118.190.122.25:10240'}, timeout=3).text
+            tac = pattern1.search(html).group('tac')
+            dytk = pattern2.search(html).group('dytk')
+            # print('22',tac,dytk)
 
         #  拼接html页面
         s_tac = "tac=\'{}\'".format(tac)
